@@ -4,7 +4,8 @@ CREATE TABLE admins (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
-    password TEXT
+    password TEXT,
+    role VARCHAR(255)
 );
 
 
@@ -31,6 +32,7 @@ CREATE TABLE candidates (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     password TEXT,
+    role VARCHAR(255)
     email VARCHAR(255) UNIQUE,
     role_id INT REFERENCES roles(id),
     stage_id INT REFERENCES stages(id)

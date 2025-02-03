@@ -116,34 +116,25 @@ const Signup = () => {
                     Register as a Candidate or Admin
                   </h4>
                   <div className="mb-2 flex flex-col sm:flex-row gap-4 text-sm font-medium text-gray-900 dark:text-white">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        value="Admin"
+                    <label className="flex flex-col gap-2">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        Register as
+                      </span>
+                      <select
                         name="role"
+                        value={formData.role}
                         onChange={(e) =>
                           setFormData({ ...formData, role: e.target.value })
                         }
-                        checked={formData.role === "Admin"}
                         required
-                        className="w-4 h-4"
-                      />
-                      Admin
-                    </label>
-
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        value="Candidate"
-                        name="role"
-                        onChange={(e) =>
-                          setFormData({ ...formData, role: e.target.value })
-                        }
-                        checked={formData.role === "Candidate"}
-                        required
-                        className="w-4 h-4"
-                      />
-                      Candidate
+                        className="p-2 border rounded-md bg-white dark:bg-gray-800 dark:text-white"
+                      >
+                        <option value="" disabled>
+                          Select Role
+                        </option>
+                        <option value="Admin">Admin</option>
+                        <option value="Candidate">Candidate</option>
+                      </select>
                     </label>
                   </div>
                 </div>

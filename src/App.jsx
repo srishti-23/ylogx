@@ -10,6 +10,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { StageProvider } from "./contexts/StageContext";
 import Candidate from "./pages/Candidate";
 import Stage from './pages/Stage'
+import Status from './pages/Status'
 
 const App = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin-dashboard" element={<Admin />} />
+        <Route path="/status" element={<Status/>} />
         <Route path="/candidate-dashboard" element={<Candidate />} />
         <Route path='/stage' element={<Stage/>}/>
       </Routes>

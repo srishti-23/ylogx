@@ -14,65 +14,61 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-
-    if (token) {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const userId = user ? user._id : null;
-
+    const storedUser = localStorage.getItem("user");
+  
+    if (token && storedUser) {
+      const user = JSON.parse(storedUser);
+      const userId = user?._id;
+  
       fetch(`http://localhost:5000/api/details/${userId}`, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.user) {
-            setCurrentUser({
-              ...data.user,
-              role: data.user.role, // Ensure role is set
-            });
+          if (data?.user) {
+            setCurrentUser({ ...data.user, role: data.user.role });
           } else {
-            localStorage.removeItem("authToken");
-            localStorage.removeItem("user");
-            navigate("/login");
+            console.log("Invalid user data", data);
+            logout();
           }
         })
-        .catch((err) => console.log("Error validating token:", err))
+        .catch((err) => {
+          console.error("Error validating token:", err);
+          logout();
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
   }, [navigate]);
+  
 
   const login = async (credentials) => {
     try {
       const response = await fetch("http://localhost:5000/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
         credentials: "include",
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setCurrentUser({
-          ...data.user,
-          role: data.user.role, // Ensure role is set on login
-        });
-        navigate("/home");
-      } else {
-        throw new Error("Login failed");
-      }
+  
+      if (!response.ok) throw new Error("Login failed");
+  
+      const data = await response.json();
+      if (!data.token || !data.user) throw new Error("Invalid login response");
+  
+      localStorage.setItem("authToken", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+  
+      setCurrentUser({ ...data.user, role: data.user.role }); // ✅ Ensure role is set
+      navigate("/home");
     } catch (error) {
       console.error("Error during login:", error);
     }
   };
+  
 
   const logout = () => {
     localStorage.removeItem("authToken");

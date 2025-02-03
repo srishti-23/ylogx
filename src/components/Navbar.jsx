@@ -1,27 +1,63 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import { FaUser, FaSignOutAlt } from "react-icons/fa";
-import { useAuth } from '../contexts/AuthContext'; // Import AuthContext
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
-  const { currentUser, logout } = useAuth(); // Get user data from context
-  
-  const navigate = useNavigate();
+  const [role, setRole] = useState(""); // Store role from API
+  const [isLoggedIn, setIsUserLoggedIn] = useState(false);
 
-  const handleNav = () => {
-    setNav(!nav);
-  };
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setIsUserLoggedIn(false);
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/details", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`, // Send token in header
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await response.json();
+        console.log("data",data);
+
+        if (response.ok) {
+          setIsUserLoggedIn(true);
+          setRole(data.user.role); // Store role from API response
+          console.log("Fetched User Role:", data.user.role);
+        } else {
+          console.error("Error fetching user details:", data.error);
+          setIsUserLoggedIn(false);
+          setRole("");
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
+
+  const handleNav = () => setNav(!nav);
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("token");
+    setIsUserLoggedIn(false);
+    setRole("");
     alert('Logged out successfully');
   };
 
   const adminNavItems = [
     { id: 1, text: 'Home', path: '/' },
-    { id: 2, text: 'Stages', path: '/stages' },
+    { id: 2, text: 'Stages', path: '/stage' },
     { id: 3, text: 'About', path: '/about' },
   ];
 
@@ -31,8 +67,7 @@ const Navbar = () => {
     { id: 3, text: 'Status', path: '/status' },
   ];
 
-  // Ensure correct navbar is displayed based on user role
-  const navItems = currentUser?.role === 'Admin' ? adminNavItems : candidateNavItems;
+  const navItems = role === 'Admin' ? adminNavItems : candidateNavItems;
 
   return (
     <div className='bg-black flex justify-between items-center h-24 max-w-screen mx-auto px-4 text-white'>
@@ -46,7 +81,7 @@ const Navbar = () => {
         ))}
 
         <li className='p-4 m-2 cursor-pointer duration-300'>
-          {currentUser ? (
+          {isLoggedIn ? (
             <button onClick={handleLogout}>
               <FaSignOutAlt size={22} className="text-[#00df9a]" />
             </button>
@@ -73,7 +108,7 @@ const Navbar = () => {
         ))}
 
         <li className='p-4 border-b rounded-xl hover:bg-[#00df9a] duration-300 hover:text-black cursor-pointer border-gray-600'>
-          {currentUser ? (
+          {isLoggedIn ? (
             <button onClick={handleLogout}>
               <FaSignOutAlt size={22} className="text-[#00df9a]" />
             </button>

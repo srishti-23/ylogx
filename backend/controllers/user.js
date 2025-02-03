@@ -15,6 +15,7 @@ exports.register = async (req, res) => {
     }
 
     const UserModel = role === "Admin" ? Admin : Candidate;
+    console.log(role);
     const tableName = role === "Admin" ? "Admin" : "Candidate"; // ✅ Fix here
     console.log(`Inserting into table: ${tableName}`); // ✅ Fix here
 
@@ -57,6 +58,7 @@ exports.login = async (req, res) => {
     // Check in Admins table first
     user = await Admin.findOne({ where: { email } });
     if (user) role = "Admin";
+    console.log(role);
 
     // If not found in Admins, check in Candidates table
     if (!user) {
@@ -119,6 +121,43 @@ exports.login = async (req, res) => {
   }
 };
 
+// exports.getUserDetails = async (req, res) => {
+//   try {
+//     console.log("Decoded User from Token:", req.user); // Log to check incoming user data
+
+//     const { id, role } = req.user; // Extracted from JWT token (authMiddleware)
+
+//     if (!id || !role) {
+//       return res.status(400).json({ error: "Invalid token data" });
+//     }
+
+//     let user = null;
+   
+//     if (role === "Admin") {
+//       user = await Admin.findByPk(id, {
+//         attributes: ["id", "name", "email", "createdAt", "role"],
+//       });
+//     } else if (role === "Candidate") {
+//       user = await Candidate.findByPk(id, {
+//         attributes: ["id", "name", "email", "createdAt", "role"],
+//       });
+//     } else {
+//       return res.status(400).json({ error: "Invalid user role" });
+//     }
+
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     console.log("Fetched User:", user); // Log user object before sending response
+
+//     return res.status(200).json({ user });
+//   } catch (error) {
+//     console.error("Error fetching user details:", error);
+//     return res.status(500).json({ error: "Server error" });
+//   }
+// };
+// controllers/userController.js
 exports.getUserDetails = async (req, res) => {
   try {
     const { id, role } = req.user; // Extracted from JWT token (authMiddleware)
@@ -127,11 +166,11 @@ exports.getUserDetails = async (req, res) => {
 
     if (role === "Admin") {
       user = await Admin.findByPk(id, {
-        attributes: ["id", "name", "email", "createdAt"], // Exclude password
+        attributes: ["id", "name", "email", "role", "createdAt"],
       });
     } else if (role === "Candidate") {
       user = await Candidate.findByPk(id, {
-        attributes: ["id", "name", "email", "createdAt", "resumeLink"], // Example additional data for candidates
+        attributes: ["id", "name", "email", "role", "createdAt"],
       });
     } else {
       return res.status(400).json({ error: "Invalid user role" });
@@ -147,3 +186,5 @@ exports.getUserDetails = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+
+
