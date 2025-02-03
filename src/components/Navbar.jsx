@@ -11,40 +11,41 @@ const Navbar = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       const token = localStorage.getItem('token');
-
+  
       if (!token) {
         setIsUserLoggedIn(false);
         return;
       }
-
+  
       try {
         const response = await fetch("http://localhost:5000/api/details", {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`, // Send token in header
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
           }
         });
-
+        
+      
         const data = await response.json();
-        console.log("data",data);
-
-        if (response.ok) {
-          setIsUserLoggedIn(true);
-          setRole(data.user.role); // Store role from API response
-          console.log("Fetched User Role:", data.user.role);
-        } else {
-          console.error("Error fetching user details:", data.error);
-          setIsUserLoggedIn(false);
-          setRole("");
+        console.log("Fetched Data:", data);
+  
+        if (response.ok && data.user) {
+          setRole(data.user.role);
+          console.log("Before setTimeout - Role:", data.user.role);
+  
+          setTimeout(() => {
+            console.log("After setTimeout - Role State:", role);
+          }, 1000);
         }
       } catch (error) {
         console.error("Fetch error:", error);
       }
     };
-
+  
     fetchUserDetails();
   }, []);
+  
 
   const handleNav = () => setNav(!nav);
 

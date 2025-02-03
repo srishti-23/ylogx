@@ -117,9 +117,7 @@ const Signup = () => {
                   </h4>
                   <div className="mb-2 flex flex-col sm:flex-row gap-4 text-sm font-medium text-gray-900 dark:text-white">
                     <label className="flex flex-col gap-2">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        Register as
-                      </span>
+                   
                       <select
                         name="role"
                         value={formData.role}

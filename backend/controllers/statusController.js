@@ -36,5 +36,31 @@ exports.createStatus = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+  exports.getStatusById = async (req, res) => {
+    try {
+      const status = await Status.findByPk(req.params.id);
+      
+      if (!status) {
+        return res.status(404).json({ error: 'Status not found' });
+      }
   
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  exports.getAllStatuses = async (req, res) => {
+    try {
+      const statuses = await Status.findAll();
+      
+      if (!statuses.length) {
+        return res.status(404).json({ error: 'No statuses found' });
+      }
+  
+      res.json(statuses);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+    
   

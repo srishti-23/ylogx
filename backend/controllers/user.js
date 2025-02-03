@@ -31,6 +31,7 @@ exports.register = async (req, res) => {
       name: fullname,
       email,
       password: hashedPassword,
+      role
     });
 
     return res.status(201).json({
@@ -39,6 +40,7 @@ exports.register = async (req, res) => {
         id: newUser.id,
         name: newUser.name,
         email: newUser.email,
+        role:newUser.role
       },
     });
   } catch (error) {
